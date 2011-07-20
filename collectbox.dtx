@@ -387,7 +387,7 @@
 % User level interface. Stores code into macro and calls the internal macro with it.
 %    \begin{macrocode}
 \newcommand*\collectboxto#1#2{%
-    \def\collectbox@code{\color@endgroup\egroup#2}%
+    \def\collectbox@code{#2}%
     \@collectboxto{#1}\collectbox@code
 }
 %    \end{macrocode}
@@ -401,6 +401,8 @@
     \leavevmode
     \setbox#1\hbox\bgroup
        \color@setgroup\bgroup
+       \aftergroup\color@endgroup
+       \aftergroup\egroup
        \aftergroup#2\relax
        \@ifnextchar\bgroup
            {\let\@let@token=}%
