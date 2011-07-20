@@ -155,9 +155,10 @@
 % \DescribeMacro\collectbox*[<code before>]{<code>}[<code after>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
 % Finally two optional arguments exists which allow the placement of further code at the beginning and end of the collected box.
 % This code is part of the box and is expanded before the main \MacroArgs<code> which is expanded after the box is fully collected.
-% In other words \Macro\collectbox!\optionaloff! [<code before>]{<code>}[<code after>]{<box content>} is equivalent to 
-% \Macro\collectbox{<code>}{<code before><box content><code after>}, with difference that the first form allows a user defined macro
-% to set the before and after code while the box content is provided by the user.
+% In other words \Macro\collectbox!\optionaloff! [<code before>]{<code>}[<code after>]{<box content>} is basically the same as
+% \Macro\collectbox{<code>}{<code before><box content><code after>}, with the difference that the first form allows a user defined macro
+% to set the before and after code while the box content is provided by the user. Note that there is also some internal code between \meta{code before} and \meta{box content}
+% as well as between \meta{box content} and \meta{code after}.
 %
 % Example of a \Macro\fbox like macro which reads its ``argument'' as box and sets it green first:
 % \begin{macroquote}
@@ -186,9 +187,10 @@
 % The box width is given by \Macro\width.
 %
 %
-% \DescribeMacro\collectboxto{<box register>}{<code>}{<box content>}
-% \DescribeMacro\collectboxto{<box register>}{<code>}\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
-% This macro collects its third ``argument'' as horizontal box and stores into into the user provided \meta{box register}.
+% \DescribeMacro\collectboxto{<box register>}[<code before>]{<code>}[<code after>]{<box content>}
+% \DescribeMacro\collectboxto{<box register>}[<code before>]{<code>}[<code after>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
+% This macro collects its last ``argument'' as horizontal box and stores into into the user provided \meta{box register}.
+% The \meta{code before} and \meta{code after} are executed before and after the \meta{box content} as part of the box.
 % Afterwards the user provided \meta{code} is executed. In contrast to \Macro\collectbox no group is added for both the box register assignment or the code
 % and also none of the above auxiliary macros for the box dimensions and content can be used. The collected box can be typeset using \Macro\usebox{<box register>}
 % and its width, height and depth dimensions can be accessed using the \TeX\ primitives \Macro\wd<box register>, \Macro\ht<box register>, \Macro\dp<box register>.
@@ -235,10 +237,15 @@
 % This macro is a short version of \Macro\collectbox and only accepts one argument \MacroArgs<code> besides the later \Macro<box content>.
 % It is intended for quick version for macros which do not need to insert code before or after the box content.
 %
+% \DescribeMacro\collectboxto@{<code before>}{<code>}{<code after>}{<box content>}
+% This macro is the internal form of \Macro\collectboxto with the optional arguments replaced by mandatory ones.
+% The \Macro\collectboxto macro itself uses it after checking for and reading the optional arguments.
+% If this macro is to be used in other macros this overhead can be avoided by using the internal form directly.
+% Not used optional arguments can be simply kept empty.
 %
-% \DescribeMacro\@collectboxto{<box register>}{<token>}{<box content>}
-% This macro is a short version of \Macro\collectboxto and only accepts one \meta{token} (e.g.\ a single macro) instead of \MacroArgs<code>.
-% It is intended for quick version for macros which only call one subsequent macro.
+% \DescribeMacro\@collectboxto{<box register>}{<code>}{<box content>}
+% This macro is a short version of \Macro\collectboxto and only accepts one \meta{code} argument.
+% It is intended for quick version for macros which do not need to insert code before or after the box content.
 %
 %
 % \StopEventually{}
@@ -271,10 +278,10 @@
 %
 % \begin{macro}{\collectbox@a}
 %    \begin{macrocode}
-\def\collectbox@a#1{%
+\long\def\collectbox@a#1{%
     \@ifnextchar[%
         {\collectbox@b{#1}}%
-        {\collectbox@a{#1}[]}%
+        {\collectbox@b{#1}[]}%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -282,7 +289,7 @@
 %
 % \begin{macro}{\collectbox@b}
 %    \begin{macrocode}
-\def\collectbox@b#1[#2]#3{%
+\long\def\collectbox@b#1[#2]#3{%
     \@ifnextchar[%
         {\collectbox@c{#2}{#3#1}}%
         {\collectbox@c{#2}{#3#1}[]}%
@@ -293,7 +300,7 @@
 %
 % \begin{macro}{\collectbox@c}
 %    \begin{macrocode}
-\def\collectbox@c#1#2[#3]{%
+\long\def\collectbox@c#1#2[#3]{%
     \collectbox@{#1}{#2}{#3}%
 }
 %    \end{macrocode}
@@ -307,7 +314,7 @@
 % The opening brace written by the user is then removed by assigning it as token to a dummy variable.
 % If no |{| or |\bgroup| follows the next token is taken as sole content.
 %    \begin{macrocode}
-\def\collectbox@#1#2#3{%
+\newcommand\collectbox@[3]{%
     \begingroup
     \leavevmode
     \@temptokena{#3\collectbox@end#2\endgroup}%
@@ -327,7 +334,7 @@
 % \begin{macro}{\@collectbox}
 % Simpler and quicker version.
 %    \begin{macrocode}
-\def\@collectbox#1{%
+\newcommand\@collectbox[1]{%
     \begingroup
     \leavevmode
     \@temptokena{\collectbox@end#1\endgroup}%
@@ -378,7 +385,9 @@
 % \begin{macro}{\collectbox@code}
 % Global storage macro for user code.
 %    \begin{macrocode}
-\def\collectbox@code{}
+\let\collectbox@before\empty
+\let\collectbox@code\empty
+\let\collectbox@after\empty
 %    \end{macrocode}
 % \end{macro}
 %
@@ -386,9 +395,42 @@
 % \begin{macro}{\collectboxto}
 % User level interface. Stores code into macro and calls the internal macro with it.
 %    \begin{macrocode}
-\newcommand*\collectboxto#1#2{%
-    \def\collectbox@code{#2}%
-    \@collectboxto{#1}\collectbox@code
+\newcommand\collectboxto[1]{%
+    \@ifnextchar[%
+        {\collectboxto@a{#1}}%
+        {\collectboxto@a{#1}[]}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectboxto@a}
+%    \begin{macrocode}
+\long\def\collectboxto@a#1[#2]#3{%
+    \@ifnextchar[%
+        {\collectboxto@b{#1}{#2}{#3}}%
+        {\collectboxto@b{#1}{#2}{#3}[]}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectboxto@b}
+%    \begin{macrocode}
+\long\def\collectboxto@b#1#2#3[#4]{%
+    \collectboxto@{#1}{#2}{#3}{#4}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectboxto@}
+%    \begin{macrocode}
+\newcommand\collectboxto@[4]{%
+    \def\collectbox@before{#2}%
+    \def\collectbox@code{#3}%
+    \def\collectbox@after{#4}%
+    \@collectboxto{#1}\collect@before\collectbox@code\collect@after
 }
 %    \end{macrocode}
 % \end{macro}
@@ -397,13 +439,12 @@
 % \begin{macro}{\@collectboxto}
 % Collects the next brace group as hbox into box register |#1| and executes token |#2| afterwards.
 %    \begin{macrocode}
-\def\@collectboxto#1#2{%
+\newcommand\@collectboxto[2]{%
     \leavevmode
+    \def\collectbox@code{\color@endgroup\egroup#2}%
     \setbox#1\hbox\bgroup
        \color@setgroup\bgroup
-       \aftergroup\color@endgroup
-       \aftergroup\egroup
-       \aftergroup#2\relax
+       \aftergroup\collectbox@code
        \@ifnextchar\bgroup
            {\let\@let@token=}%
            {\collectbox@arg}%
