@@ -26,12 +26,12 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{collectbox}
 %<*package>
-    [2011/07/18 v0.1 Collect macro arguments as boxes]
+    [2011/07/20 v0.2 Collect macro arguments as boxes]
 %</package>
 %
 %<*driver>
 \documentclass{ydoc}
-\usepackage{collectbox}[2011/07/18]
+\usepackage{collectbox}[2011/07/20]
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -43,7 +43,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{96}
+% \CheckSum{121}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -63,6 +63,7 @@
 %
 %
 % \changes{v0.1}{2011/07/18}{First release.}
+% \changes{v0.2}{2011/07/20}{Added \cs{collectboxto} and \cs{@collectboxto} macros.}
 %
 % \DoNotIndex{\newcommand,\newenvironment}
 %
@@ -87,6 +88,20 @@
 % {\bfseries\color{red}Disclaimer: This is the very first release of this package and the code might still change in future releases.}
 % \end{abstract}
 %
+% \section{Quick overview}
+% The following macros are provided for users (document authors) and \LaTeX\ package authors/programmers and described in the following sections.
+% The \MacroArgs* and \MacroArgs[<\ldots>] arguments are as always optional. The \MacroArgs{<box content>} can also be written as 
+% \Macro\bgroup<box content>\AlsoMacro\egroup and be split across macro boundaries.
+%
+% \begingroup
+% \descindent=\parindent
+% \DescribeMacro\collectbox*[<code before>]{<code>}[<code after>]{<box content>}
+% \DescribeMacro\collectboxto{<box register>}{<code>}{<box content>}
+%
+% \DescribeMacro\collectbox@{<code before>}{<code>}{<code after>}{<box content>}
+% \DescribeMacro\@collectbox{<code>}{<box content>}
+% \DescribeMacro\@collectboxto{<box register>}{<token>}{<box content>}
+% \endgroup
 %
 % \section{Dependencies, Compatibility and Installation}
 % This package does not depend on any other \LaTeX\ package or class.
@@ -107,13 +122,13 @@
 % \section{User Interface}
 % The following macros are provided on the user level.
 %
+%
 % \DescribeMacro\collectbox{<code>}{<box content>}
 % \DescribeMacro\collectbox{<code>}\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
 % In its basic form this macro is written as \Macro\collectbox{<code>} and collects the following `group' in explicit (|{ .. }|) or implicit (|\bgroup .. \egroup|) braces
 % as box (here represented as \MacroArgs{<box content>}). Afterwards the user provided \MacroArgs<code> is executed. This code is processed inside an internal group
 % and has access to the just collected content using \Macro\BOXCONTENT and other macros described further below. Usually the code does some calculations and/or modifications
 % on the collected box and then typesets it using \Macro\BOXCONTENT.
-% In addition to the \DescribeMacro\collectbox{<code>}{<box content>}
 %
 % An example is
 % \codeline{\Macro\collectbox{\AlsoMacro\fbox{\AlsoMacro\BOXCONTENT}}'{\verb+verbatim stuff \space\empty+}'}
@@ -171,6 +186,23 @@
 % The box width is given by \Macro\width.
 %
 %
+% \DescribeMacro\collectboxto{<box register>}{<code>}{<box content>}
+% \DescribeMacro\collectboxto{<box register>}{<code>}\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
+% This macro collects its third ``argument'' as horizontal box and stores into into the user provided \meta{box register}.
+% Afterwards the user provided \meta{code} is executed. In contrast to \Macro\collectbox no group is added for both the box register assignment or the code
+% and also none of the above auxiliary macros for the box dimensions and content can be used. The collected box can be typeset using \Macro\usebox{<box register>}
+% and its width, height and depth dimensions can be accessed using the \TeX\ primitives \Macro\wd<box register>, \Macro\ht<box register>, \Macro\dp<box register>.
+%
+% Appropriate grouping must be added manually if the overall code should be kept local. Proper places to open and close the group is somewhere before 
+% the \Macro\collectboxto macro and in the \meta{<code>} after the box was used, respectively.
+% The box register must be declared beforehand using \Macro\newsavebox\relax (\LaTeX) or \Macro\newbox (\TeX).
+% The provided box register \Macro\collectedbox can be used here but will be overwritten by further usages of most of the macros of this package.
+% The \LaTeX\ code also provides \Macro\@tempboxa for temporary usages.
+%
+% This macro can be used to create macros which collect more than one argument as box. For this two box registers are required and the \meta{code} of the 
+% first \Macro\collectboxto usage must call it second time. The second \meta{code} then typesets the two boxes.
+%
+%
 % \section{Programmers Interface}
 %
 % For the package author/programmer and more advanced users the following internal macros are provided.
@@ -180,7 +212,7 @@
 % This macro is the internal form of \Macro\collectbox with the optional arguments replaced by mandatory ones.
 % The \Macro\collectbox macro itself uses it after checking for and reading the optional arguments.
 % If this macro is to be used in other macros this overhead can be avoided by using the internal form directly.
-% Not used optional arguments can be simply kept empty. The star version is not supported by can be easily substituded by 
+% Not used optional arguments can be simply kept empty. The star version is not supported but can be easily substituted by 
 % manually placing the \MacroArgs{\Macro\BOXCONTENT} at the end of \MacroArgs<code>.
 %
 % The above example can therefore be written in the faster processed form:
@@ -204,6 +236,11 @@
 % It is intended for quick version for macros which do not need to insert code before or after the box content.
 %
 %
+% \DescribeMacro\@collectboxto{<box register>}{<token>}{<box content>}
+% This macro is a short version of \Macro\collectboxto and only accepts one \meta{token} (e.g.\ a single macro) instead of \MacroArgs<code>.
+% It is intended for quick version for macros which only call one subsequent macro.
+%
+%
 % \StopEventually{}
 %
 % \section{Implementation}
@@ -223,7 +260,7 @@
 % \begin{macro}{\collectbox}
 % User level interface. Scans for potential star and optional arguments.
 %    \begin{macrocode}
-\def\collectbox{%
+\newcommand*\collectbox{%
     \@ifstar
         {\collectbox@a{{\BOXCONTENT}}}%
         {\collectbox@a{}}%
@@ -333,6 +370,41 @@
     \let\totalheight\@ovri
     \totalheight\height
     \advance\totalheight\depth
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@code}
+% Global storage macro for user code.
+%    \begin{macrocode}
+\def\collectbox@code{}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectboxto}
+% User level interface. Stores code into macro and calls the internal macro with it.
+%    \begin{macrocode}
+\newcommand*\collectboxto#1#2{%
+    \def\collectbox@code{\color@endgroup\egroup#2}%
+    \@collectboxto{#1}\collectbox@code
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\@collectboxto}
+% Collects the next brace group as hbox into box register |#1| and executes token |#2| afterwards.
+%    \begin{macrocode}
+\def\@collectboxto#1#2{%
+    \leavevmode
+    \setbox#1\hbox\bgroup
+       \color@setgroup\bgroup
+       \aftergroup#2\relax
+       \@ifnextchar\bgroup
+           {\let\@let@token=}%
+           {\collectbox@arg}%
 }
 %    \end{macrocode}
 % \end{macro}
