@@ -43,7 +43,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{121}
+% \CheckSum{216}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -308,7 +308,7 @@
 %
 %
 % \begin{macro}{\collectbox@}
-% The box is saved using |\setbox|. Color is supported by using |\color@setgroup|.
+% The box is saved using |\setbox|. Color is supported by using |\collectbox@setgroup|.
 % A brace group is then opened using |\bgroup| which will replace the opening brace of the 
 % ``argument''. The end code is installed in this group using |\aftergroup|.
 % The opening brace written by the user is then removed by assigning it as token to a dummy variable.
@@ -319,7 +319,7 @@
     \leavevmode
     \@temptokena{#3\collectbox@end#2\endgroup}%
     \setbox\collectedbox\hbox\bgroup
-       \color@setgroup
+       \collectbox@setgroup
        #1\bgroup
        \aftergroup\the
        \aftergroup\@temptokena
@@ -344,24 +344,40 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\collectbox@@begin}
 %    \begin{macrocode}
-\let\collectbox@@begin\empty
+\newif\ifcollectboxignorespaces
+\collectboxignorespacestrue
 %    \end{macrocode}
-% \end{macro}
 %
 % \begin{macro}{\collectbox@begin}
 % Hook executed \emph{direct} before the user content.
 %    \begin{macrocode}
-\def\collectbox@begin{\ignorespaces}
+\def\collectbox@begin{%
+    \ifcollectboxignorespaces
+        \expandafter\ignorespaces
+    \fi
+}
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\collectbox@@end}
-% Hook executed at the very last thing in the box.
-% This is one grouping level higher than \Macro\collectbox@begin\relax!
+%
+% \begin{macro}{\collectbox@setgroup}
 %    \begin{macrocode}
-\def\collectbox@@end{\ifhmode\unskip\fi}
+\def\collectbox@setgroup{%
+    \color@setgroup
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@endgroup}
+%    \begin{macrocode}
+\def\collectbox@endgroup{%
+    \ifcollectboxignorespaces
+        \ifhmode\unskip\fi
+    \fi
+    \color@endgroup
+}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -374,7 +390,7 @@
     \leavevmode
     \@temptokena{\collectbox@end#1\endgroup}%
     \setbox\collectedbox\hbox\bgroup
-       \color@setgroup\bgroup
+       \collectbox@setgroup\bgroup
        \aftergroup\the
        \aftergroup\@temptokena
        \collectbox@bgroup
@@ -401,8 +417,7 @@
 % Direct after this code the users code is processed and concluded with a |\endgroup|.
 %    \begin{macrocode}
 \def\collectbox@end{%
-    \collectbox@@end
-    \color@endgroup
+    \collectbox@endgroup
     \egroup
     \def\BOXCONTENT{\usebox\collectedbox}%
     \def\width{\wd\collectedbox}%
@@ -461,8 +476,8 @@
 \newcommand\collectboxto@[4]{%
     \leavevmode
     \setbox#1\hbox\bgroup
-       \def\collectbox@code{#4\color@endgroup\egroup#3}%
-       \color@setgroup#2\bgroup
+       \def\collectbox@code{#4\collectbox@endgroup\egroup#3}%
+       \collectbox@setgroup#2\bgroup
        \aftergroup\collectbox@code
        \collectbox@bgroup
 }
@@ -476,8 +491,8 @@
 \newcommand\@collectboxto[2]{%
     \leavevmode
     \setbox#1\hbox\bgroup
-       \def\collectbox@code{\color@endgroup\egroup#2}%
-       \color@setgroup\bgroup
+       \def\collectbox@code{\collectbox@endgroup\egroup#2}%
+       \collectbox@setgroup\bgroup
        \aftergroup\collectbox@code
        \collectbox@bgroup
 }
@@ -499,6 +514,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
+%
+% \begin{macro}{\collectboxcheckenv}
+%    \begin{macrocode}
 \newcommand*\collectboxcheckenv[1]{%
     \begingroup
     \def\@tempa{#1}%
@@ -512,6 +530,9 @@
         \endgroup
     \fi
 }
+%    \end{macrocode}
+% \end{macro}
+%
 %
 % \iffalse
 %</package>
