@@ -331,11 +331,37 @@
 %
 % \begin{macro}{\collectbox@bgroup}
 %    \begin{macrocode}
-\def\collectbox@bgroup{%
+\def\collectbox@real@bgroup{%
     \@ifnextchar\bgroup
-        {\let\@let@token=}%
+        {\afterassignment\collectbox@begin\let\@let@token=}%
         {\collectbox@arg}%
 }
+\def\collectbox@@bgroup{%
+    \let\collectbox@bgroup\collectbox@real@bgroup
+    \collectbox@begin
+}
+\let\collectbox@bgroup\collectbox@real@bgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\collectbox@@begin}
+%    \begin{macrocode}
+\let\collectbox@@begin\empty
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\collectbox@begin}
+% Hook executed \emph{direct} before the user content.
+%    \begin{macrocode}
+\def\collectbox@begin{\ignorespaces}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\collectbox@@end}
+% Hook executed at the very last thing in the box.
+% This is one grouping level higher than \Macro\collectbox@begin\relax!
+%    \begin{macrocode}
+\def\collectbox@@end{\ifhmode\unskip\fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -363,7 +389,7 @@
 % to trigger the |\aftergroup| code.
 %    \begin{macrocode}
 \def\collectbox@arg#1{%
-    #1\egroup
+    \collectbox@begin#1\egroup
 }
 %    \end{macrocode}
 % \end{macro}
@@ -375,6 +401,7 @@
 % Direct after this code the users code is processed and concluded with a |\endgroup|.
 %    \begin{macrocode}
 \def\collectbox@end{%
+    \collectbox@@end
     \color@endgroup
     \egroup
     \def\BOXCONTENT{\usebox\collectedbox}%
@@ -472,6 +499,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+\newcommand*\collectboxcheckenv[1]{%
+    \begingroup
+    \def\@tempa{#1}%
+    \ifx\@currenvir\@tempa
+        \edef\@currenvir{\@currenvir\noexpand\empty}%
+        \let\collectbox@bgroup\collectbox@@bgroup
+        \ifcsname end#1\endcsname\else
+            \@namedef{end#1}{\egroup\endgroup}%
+        \fi
+    \else
+        \endgroup
+    \fi
+}
 %
 % \iffalse
 %</package>
