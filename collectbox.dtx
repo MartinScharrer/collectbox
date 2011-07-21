@@ -323,9 +323,18 @@
        #1\bgroup
        \aftergroup\the
        \aftergroup\@temptokena
-       \@ifnextchar\bgroup
-           {\let\@let@token=}%
-           {\collectbox@arg}%
+       \collectbox@bgroup
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@bgroup}
+%    \begin{macrocode}
+\def\collectbox@bgroup{%
+    \@ifnextchar\bgroup
+        {\let\@let@token=}%
+        {\collectbox@arg}%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -342,9 +351,7 @@
        \color@setgroup\bgroup
        \aftergroup\the
        \aftergroup\@temptokena
-       \@ifnextchar\bgroup
-           {\let\@let@token=}%
-           {\collectbox@arg}%
+       \collectbox@bgroup
 }
 %    \end{macrocode}
 % \end{macro}
@@ -430,9 +437,7 @@
        \def\collectbox@code{#4\color@endgroup\egroup#3}%
        \color@setgroup#2\bgroup
        \aftergroup\collectbox@code
-       \@ifnextchar\bgroup
-           {\let\@let@token=}%
-           {\collectbox@arg}%
+       \collectbox@bgroup
 }
 %    \end{macrocode}
 % \end{macro}
@@ -447,9 +452,7 @@
        \def\collectbox@code{\color@endgroup\egroup#2}%
        \color@setgroup\bgroup
        \aftergroup\collectbox@code
-       \@ifnextchar\bgroup
-           {\let\@let@token=}%
-           {\collectbox@arg}%
+       \collectbox@bgroup
 }
 %    \end{macrocode}
 % \end{macro}
@@ -464,9 +467,7 @@
        \def\collectbox@code{#3\egroup#2}%
        #1\bgroup
        \aftergroup\collectbox@code
-       \@ifnextchar\bgroup
-           {\let\@let@token=}%
-           {\collectbox@arg}%
+       \collectbox@bgroup
 }
 %    \end{macrocode}
 % \end{macro}
