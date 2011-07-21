@@ -385,9 +385,7 @@
 % \begin{macro}{\collectbox@code}
 % Global storage macro for user code.
 %    \begin{macrocode}
-\let\collectbox@before\empty
 \let\collectbox@code\empty
-\let\collectbox@after\empty
 %    \end{macrocode}
 % \end{macro}
 %
@@ -427,10 +425,14 @@
 % \begin{macro}{\collectboxto@}
 %    \begin{macrocode}
 \newcommand\collectboxto@[4]{%
-    \def\collectbox@before{#2}%
-    \def\collectbox@code{#3}%
-    \def\collectbox@after{#4}%
-    \@collectboxto{#1}\collect@before\collectbox@code\collect@after
+    \leavevmode
+    \setbox#1\hbox\bgroup
+       \def\collectbox@code{#4\color@endgroup\egroup#3}%
+       \color@setgroup#2\bgroup
+       \aftergroup\collectbox@code
+       \@ifnextchar\bgroup
+           {\let\@let@token=}%
+           {\collectbox@arg}%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -441,8 +443,8 @@
 %    \begin{macrocode}
 \newcommand\@collectboxto[2]{%
     \leavevmode
-    \def\collectbox@code{\color@endgroup\egroup#2}%
     \setbox#1\hbox\bgroup
+       \def\collectbox@code{\color@endgroup\egroup#2}%
        \color@setgroup\bgroup
        \aftergroup\collectbox@code
        \@ifnextchar\bgroup
