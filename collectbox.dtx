@@ -455,6 +455,23 @@
 % \end{macro}
 %
 %
+% \begin{macro}{\nocollectbox@}
+% Turns a brace group into \Macro\hbox{<code before><content><code after>}<code>.
+%    \begin{macrocode}
+\newcommand\nocollectbox@[3]{%
+    \leavevmode
+    \hbox\bgroup
+       \def\collectbox@code{#3\egroup#2}%
+       #1\bgroup
+       \aftergroup\collectbox@code
+       \@ifnextchar\bgroup
+           {\let\@let@token=}%
+           {\collectbox@arg}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
 % \iffalse
 %</package>
 % \fi
