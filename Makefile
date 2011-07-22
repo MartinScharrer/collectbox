@@ -17,7 +17,7 @@ package: unpack
 class: unpack
 
 ${PACKEDFILES}: collectbox.dtx collectbox.ins
-	yes | pdflatex collectbox.ins
+	pdflatex collectbox.ins
 
 unpack: ${PACKEDFILES}
 
