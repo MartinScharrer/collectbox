@@ -1,0 +1,12 @@
+syntax: glob
+*.swp
+.hgignore
+.svn
+.svn/*
+*.aux
+*.cod
+*.fdb_latexmk
+*.log
+*.out
+*.pdf
+*.sty
