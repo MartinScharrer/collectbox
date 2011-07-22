@@ -1,0 +1,23 @@
+%&pdflatex
+\documentclass{article}
+
+\usepackage{collectbox}
+
+\newcommand*{\mybox}{%
+    \collectboxcheckenv{mybox}%
+    \collectbox*\fbox
+}
+
+\begin{document}
+
+\mybox{Text \verb+\relax!+}
+
+\begin{mybox}
+    Test
+    \mybox{Text \verb+\relax!+}
+    it
+\end{mybox}
+
+\end{document}
+
+

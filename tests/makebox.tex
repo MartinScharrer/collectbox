@@ -1,0 +1,49 @@
+%&pdflatex
+\documentclass{article}
+
+\usepackage{collectbox}
+
+\makeatletter
+\newcommand*\Mbox{%
+    \leavevmode
+    \@ifnextchar\bgroup
+        \hbox
+        \mbox
+}
+
+\newcommand*\Makebox{%
+    \@ifnextchar[%
+        \@Makebox%
+        \Mbox%
+}
+\def\@Makebox[#1]{%
+    \@ifnextchar[%
+        {\@@Makebox{#1}}%
+        {\@@Makebox{#1}[c]}%
+}
+\def\@@Makebox#1[#2]{%
+    \collectbox*{\@imakebox[{#1}][{#2}]}%
+}
+
+\newcommand*\Fbox{\collectbox*\fbox}
+\makeatother
+
+% \makebox[width][position]{text}
+\begin{document}
+
+\Makebox{\verb+\relax+}
+
+\Fbox{
+\Makebox[5cm][c]{\verb+\relax+}
+}
+
+\Fbox{
+\Makebox[5cm][r]{\verb+\relax+}
+}
+
+\def\A{TEST}
+\Mbox\A
+
+\end{document}
+
+

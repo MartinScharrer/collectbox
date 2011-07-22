@@ -1,0 +1,42 @@
+%&pdflatex
+\documentclass{article}
+
+\usepackage{collectbox}
+
+\newcommand*{\mybox}{%
+    \collectboxcheckenv{mybox}%
+    \collectbox*\fbox
+}
+\makeatletter
+\newcommand*{\Centerline}{%
+    \leavevmode
+    \hb@xt@\linewidth\bgroup
+        \hss\bgroup
+        \aftergroup\hss
+        \aftergroup\egroup
+        \collectbox@bgroup
+}
+\makeatother
+
+\begin{document}
+
+test test test test test test test test test test test test test test 
+test test test test test test test test test test test test test test 
+test test test test test test test test test test test test test test 
+test test test test test test test test test test test test test test 
+test test test test test test test test test test test test test test 
+test test test test test test test test test test test test test test 
+\mybox{Text \verb+\relax!+}
+
+.\Centerline{tes}
+.\Centerline{Text \verb+\relax!+}
+
+\begin{mybox}
+    Test
+    \mybox{Text \verb+\relax!+}
+    it
+\end{mybox}
+
+\end{document}
+
+
