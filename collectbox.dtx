@@ -123,7 +123,7 @@
 % \section{User Interface}
 % The following macros are provided on the user level.
 %
-%
+% \subsection{Macros to collect boxes}
 % \DescribeMacro\collectbox{<code>}{<box content>}
 % \DescribeMacro\collectbox{<code>}\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
 % In its basic form this macro is written as \Macro\collectbox{<code>} and collects the following `group' in explicit (|{ .. }|) or implicit (|\bgroup .. \egroup|) braces
@@ -197,7 +197,7 @@
 % and its width, height and depth dimensions can be accessed using the \TeX\ primitives \Macro\wd<box register>, \Macro\ht<box register>, \Macro\dp<box register>.
 %
 % Appropriate grouping must be added manually if the overall code should be kept local. Proper places to open and close the group is somewhere before 
-% the \Macro\collectboxto macro and in the \meta{<code>} after the box was used, respectively.
+% the \Macro\collectboxto macro and in the \meta{code} after the box was used, respectively.
 % The box register must be declared beforehand using \Macro\newsavebox\relax (\LaTeX) or \Macro\newbox (\TeX).
 % The provided box register \Macro\collectedbox can be used here but will be overwritten by further usages of most of the macros of this package.
 % The \LaTeX\ code also provides \Macro\@tempboxa for temporary usages.
@@ -205,6 +205,28 @@
 % This macro can be used to create macros which collect more than one argument as box. For this two box registers are required and the \meta{code} of the 
 % first \Macro\collectboxto usage must call it second time. The second \meta{code} then typesets the two boxes.
 %
+% \subsection{Support for environments}
+%
+% \DescribeMacro\collectboxcheckenv{<name>}
+% This macro allows macros which use \Macro\collectbox to also be used as an environment.
+% For this \Macro\collectboxcheckenv must be used before \Macro\collectbox with the macro name as argument.
+% It then detects if the macro is used by itself or is called by \Macro\begin{<name>} and adjusts the internal configuration
+% accordantly. In macro-mode it does not change anything, but in environment-mode a \Macro\begingroup is used to keep the configuration changes local.
+% The corresponding \Macro\end<name> macro need to close then both the box group using \Macro\egroup and then close the outer group \Macro\engroup.
+% A suitable version is automatically defined if this macro doesn't exists yet.
+%
+% \paragraph{Example:} Defines \Macro\foobar macro which can also be used as \env{foobar} environment.
+% \begin{codequote}
+%     \AlsoMacro\newcommand'*'{\Macro\foobar}'{%'\\
+%     !\mbox{}!~~~~\AlsoMacro\collectboxcheckenv{foobar}'%'\\
+%     !\mbox{}!~~~~\AlsoMacro\collectbox'*'{\Macro\fbox}'%'\\
+%     '}'%
+% \end{codequote}
+%
+% \subsection{Handling of spaces}
+% Normally 
+% \DescribeMacro\collectboxignorespacestrue
+% \DescribeMacro\collectboxignorespacesfalse
 %
 % \section{Programmers Interface}
 %
@@ -247,7 +269,6 @@
 % \DescribeMacro\@collectboxto{<box register>}{<code>}{<box content>}
 % This macro is a short version of \Macro\collectboxto and only accepts one \meta{code} argument.
 % It is intended for quick version for macros which do not need to insert code before or after the box content.
-%
 %
 % \StopEventually{}
 %

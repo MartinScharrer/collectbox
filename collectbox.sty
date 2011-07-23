@@ -72,37 +72,25 @@
 %
 % \begin{macro}{\collectbox@bgroup}
 %    \begin{macrocode}
-\def\collectbox@real@bgroup{%
+\def\collectbox@macro@bgroup{%
     \@ifnextchar\bgroup
-        {\afterassignment\collectbox@begin\let\@let@token=}%
+        {\let\@let@token=}%
         {\collectbox@arg}%
 }
-\def\collectbox@@bgroup{%
-    \let\collectbox@bgroup\collectbox@real@bgroup
-    \collectbox@begin
-}
-\let\collectbox@bgroup\collectbox@real@bgroup
-%    \end{macrocode}
-% \end{macro}
-%
-%    \begin{macrocode}
-\newif\ifcollectboxignorespaces
-\collectboxignorespacestrue
-%    \end{macrocode}
-%
-% \begin{macro}{\collectbox@begin}
-% Hook executed \emph{direct} before the user content.
-%    \begin{macrocode}
-\def\collectbox@begin{%
-    \ifcollectboxignorespaces
-        \expandafter\ignorespaces
+\def\collectbox@env@bgroup{%
+    \collectboxenvfalse
+    \let\collectbox@bgroup\collectbox@macro@bgroup
+    \ifcollectboxenvignorespaces
+        .\expandafter\ignorespaces
     \fi
 }
+\let\collectbox@bgroup\collectbox@macro@bgroup
 %    \end{macrocode}
 % \end{macro}
 %
 %
 % \begin{macro}{\collectbox@setgroup}
+% Used at the very begin of the stored box.
 %    \begin{macrocode}
 \def\collectbox@setgroup{%
     \color@setgroup
@@ -112,10 +100,17 @@
 %
 %
 % \begin{macro}{\collectbox@endgroup}
+% Used at the very end of the stored box.
 %    \begin{macrocode}
+\newif\ifcollectboxenv
+\newif\ifcollectboxenvignorespaces
+\collectboxenvignorespacestrue
+
 \def\collectbox@endgroup{%
-    \ifcollectboxignorespaces
-        \ifhmode\unskip\fi
+    \ifcollectboxenv
+        \ifcollectboxenvignorespaces
+            \ifhmode\unskip\fi
+        \fi
     \fi
     \color@endgroup
 }
@@ -124,7 +119,7 @@
 %
 %
 % \begin{macro}{\@collectbox}
-% Simpler and quicker version.
+% Simpler and quicker version of \Macro\collectbox.
 %    \begin{macrocode}
 \newcommand\@collectbox[1]{%
     \begingroup
@@ -181,7 +176,7 @@
 %
 %
 % \begin{macro}{\collectboxto}
-% User level interface. Stores code into macro and calls the internal macro with it.
+% User level interface. Reads box register and checks for optional argument.
 %    \begin{macrocode}
 \newcommand\collectboxto[1]{%
     \@ifnextchar[%
@@ -193,6 +188,7 @@
 %
 %
 % \begin{macro}{\collectboxto@a}
+% Reads first optional and next mandatory arguments.
 %    \begin{macrocode}
 \long\def\collectboxto@a#1[#2]#3{%
     \@ifnextchar[%
@@ -204,6 +200,7 @@
 %
 %
 % \begin{macro}{\collectboxto@b}
+% Reads second optional argument.
 %    \begin{macrocode}
 \long\def\collectboxto@b#1#2#3[#4]{%
     \collectboxto@{#1}{#2}{#3}{#4}%
@@ -212,7 +209,8 @@
 % \end{macro}
 %
 %
-% \begin{macro}{\collectboxto@}
+% \begin{macro}{\collectboxto@}[4]{box register}{code before}{code}{code after}
+% Installs code and starts to collect the box.
 %    \begin{macrocode}
 \newcommand\collectboxto@[4]{%
     \leavevmode
@@ -257,13 +255,18 @@
 %
 %
 % \begin{macro}{\collectboxcheckenv}
+% Checks if current macro is used as environment given by |#1|.
+% If so the |bgroup| eating macro is redefined.
+% A suitable end-macro is provided if non exists. All of this is done inside
+% a group to keep thing local.
 %    \begin{macrocode}
 \newcommand*\collectboxcheckenv[1]{%
     \begingroup
     \def\@tempa{#1}%
     \ifx\@currenvir\@tempa
         \edef\@currenvir{\@currenvir\noexpand\empty}%
-        \let\collectbox@bgroup\collectbox@@bgroup
+        \let\collectbox@bgroup\collectbox@env@bgroup
+        \collectboxenvtrue
         \ifcsname end#1\endcsname\else
             \@namedef{end#1}{\egroup\endgroup}%
         \fi

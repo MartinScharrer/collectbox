@@ -8,13 +8,30 @@
     \collectbox*\fbox
 }
 
+
 \begin{document}
 
 \mybox{Text \verb+\relax!+}
-
+\mybox{}
+\mybox{ }
 \begin{mybox}
+\end{mybox}
+
+\begin{mybox} a
     Test
-    \mybox{Text \verb+\relax!+}
+    \mybox{ Text \verb+\relax!+ }
+    it
+    \mybox{ Text \verb+\relax!+ 
+    \begin{mybox} a
+        Test
+        \mybox{ Text \verb+\relax!+ }
+        it
+        \mybox{ Text \verb+\relax!+ 
+        }
+        it
+    \end{mybox}
+        bla
+    }
     it
 \end{mybox}
 
