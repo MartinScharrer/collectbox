@@ -11,7 +11,7 @@ DOCFILES=collectbox.pdf
 #collectbox-de.pdf
 SRCFILES=collectbox.dtx collectbox.ins README Makefile
 
-all: unpack doc
+all: doc
 
 package: unpack
 class: unpack

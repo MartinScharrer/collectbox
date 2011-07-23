@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2011 by <+author+> <<+email+>>
+% Copyright (C) 2011 by Martin Scharrer <martin@scharer-online.de>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -23,15 +23,10 @@
 %<*driver>
 \ProvidesFile{collectbox.dtx}
 %</driver>
-%<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
-%<package>\ProvidesPackage{collectbox}
-%<*package>
-    [2011/07/20 v0.2 Collect macro arguments as boxes]
-%</package>
 %
 %<*driver>
 \documentclass{ydoc}
-\usepackage{collectbox}[2011/07/20]
+\usepackage{collectbox}[2011/07/23]
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -65,6 +60,7 @@
 %
 % \changes{v0.1}{2011/07/18}{First release.}
 % \changes{v0.2}{2011/07/20}{Added \cs{collectboxto} and \cs{@collectboxto} macros.}
+% \changes{v0.2}{2011/07/23}{Added \cs{collectboxcheckenv}.}
 %
 % \DoNotIndex{\newcommand,\newenvironment}
 %
@@ -86,7 +82,7 @@
 % in the begin and end code of an environment.
 % The provided macros are mainly intended to be used inside other macros or environments.
 %
-% {\bfseries\color{red}Disclaimer: This is the very first release of this package and the code might still change in future releases.}
+% {\bfseries\color{red}Disclaimer: This is an beta release of this package and the code might still change in future releases.}
 % \end{abstract}
 %
 % \section{Quick overview}
@@ -96,12 +92,14 @@
 %
 % \begingroup
 % \descindent=\parindent
-% \DescribeMacro\collectbox*[<code before>]{<code>}[<code after>]{<box content>}
+% \DescribeMacro\collectbox*[<code at begin>]{<code>}[<code at end>]{<box content>}
 % \DescribeMacro\collectboxto{<box register>}{<code>}{<box content>}
+% \DescribeMacro\collectboxcheckenv{<name>}
 %
-% \DescribeMacro\collectbox@{<code before>}{<code>}{<code after>}{<box content>}
+% \DescribeMacro\collectbox@{<code at begin>}{<code>}{<code at end>}{<box content>}
 % \DescribeMacro\@collectbox{<code>}{<box content>}
 % \DescribeMacro\@collectboxto{<box register>}{<token>}{<box content>}
+% \DescribeMacro\nocollectbox@{<code at begin>}{<code>}{<code at end>}
 % \endgroup
 %
 % \section{Dependencies, Compatibility and Installation}
@@ -150,18 +148,18 @@
 % Using this macro a \Macro\fbox variant can be defined which reads its content as real box and not as macro argument:
 % \codeline{\Macro\newcommand{\AlsoMacro\Fbox}{\AlsoMacro\collectbox*{\AlsoMacro\fbox}}}
 %
-% \DescribeMacro\collectbox [<code before>]{<code>}[<code after>]{<box content>}
-% \DescribeMacro\collectbox [<code before>]{<code>}[<code after>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
-% \DescribeMacro\collectbox*[<code before>]{<code>}[<code after>]{<box content>}
-% \DescribeMacro\collectbox*[<code before>]{<code>}[<code after>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
+% \DescribeMacro\collectbox [<code at begin>]{<code>}[<code at end>]{<box content>}
+% \DescribeMacro\collectbox [<code at begin>]{<code>}[<code at end>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
+% \DescribeMacro\collectbox*[<code at begin>]{<code>}[<code at end>]{<box content>}
+% \DescribeMacro\collectbox*[<code at begin>]{<code>}[<code at end>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
 % Finally two optional arguments exists which allow the placement of further code at the beginning and end of the collected box.
 % This code is part of the box and is expanded before the main \MacroArgs<code> which is expanded after the box is fully collected.
-% In other words \Macro\collectbox!\optionaloff! [<code before>]{<code>}[<code after>]{<box content>} is basically the same as
-% \Macro\collectbox{<code>}{<code before><box content><code after>}, with the difference that the first form allows a user defined macro
-% to set the before and after code while the box content is provided by the user. Note that there is also some internal code between \meta{code before} and \meta{box content}
-% as well as between \meta{box content} and \meta{code after}.
+% In other words \Macro\collectbox!\optionaloff! [<code at begin>]{<code>}[<code at end>]{<box content>} is basically the same as
+% \Macro\collectbox{<code>}{<code at begin><.><box content><.><code at end>}, with the difference that the first form allows an user defined macro
+% to set the begin and end code while the box content is provided by the user.
+% Note that there is also some internal code \meta{.} between \meta{code at begin} and \meta{box content} as well as between \meta{box content} and \meta{code at end}.
 %
-% Example of a \Macro\fbox like macro which reads its ``argument'' as box and sets it green first:
+% \paragraph{Example:} \leavevmode\Macro\fbox like macro which reads its ``argument'' as box and sets it green first:
 % \begin{macroquote}
 %  \newcommand!\optionaloff!{\AlsoMacro\GFbox}{\AlsoMacro\collectbox*[\AlsoMacro\color{green}]{\AlsoMacro\fbox}}\\
 %  \GFbox{'test $a=4$ \verb|\relax|'}
@@ -188,10 +186,10 @@
 % The box width is given by \Macro\width.
 %
 %
-% \DescribeMacro\collectboxto{<box register>}[<code before>]{<code>}[<code after>]{<box content>}
-% \DescribeMacro\collectboxto{<box register>}[<code before>]{<code>}[<code after>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
+% \DescribeMacro\collectboxto{<box register>}[<code at begin>]{<code>}[<code at end>]{<box content>}
+% \DescribeMacro\collectboxto{<box register>}[<code at begin>]{<code>}[<code at end>]\AlsoMacro\bgroup<box content>\AlsoMacro\egroup
 % This macro collects its last ``argument'' as horizontal box and stores into into the user provided \meta{box register}.
-% The \meta{code before} and \meta{code after} are executed before and after the \meta{box content} as part of the box.
+% The \meta{code at begin} and \meta{code at end} are executed at begin and end of the \meta{box content} as part of the box.
 % Afterwards the user provided \meta{code} is executed. In contrast to \Macro\collectbox no group is added for both the box register assignment or the code
 % and also none of the above auxiliary macros for the box dimensions and content can be used. The collected box can be typeset using \Macro\usebox{<box register>}
 % and its width, height and depth dimensions can be accessed using the \TeX\ primitives \Macro\wd<box register>, \Macro\ht<box register>, \Macro\dp<box register>.
@@ -214,6 +212,7 @@
 % accordantly. In macro-mode it does not change anything, but in environment-mode a \Macro\begingroup is used to keep the configuration changes local.
 % The corresponding \Macro\end<name> macro need to close then both the box group using \Macro\egroup and then close the outer group \Macro\engroup.
 % A suitable version is automatically defined if this macro doesn't exists yet.
+% In environment-mode starting and trailing spaces are ignored which is also the normal behaviour of similar environments like \env{minipage}.
 %
 % \paragraph{Example:} Defines \Macro\foobar macro which can also be used as \env{foobar} environment.
 % \begin{codequote}
@@ -223,17 +222,13 @@
 %     '}'%
 % \end{codequote}
 %
-% \subsection{Handling of spaces}
-% Normally 
-% \DescribeMacro\collectboxignorespacestrue
-% \DescribeMacro\collectboxignorespacesfalse
 %
 % \section{Programmers Interface}
 %
 % For the package author/programmer and more advanced users the following internal macros are provided.
 % If used inside a document file they must be wrapped inside \Macro\makeatletter and \Macro\makeatother\relax (outside the macro which uses them).
 %
-% \DescribeMacro\collectbox@{<code before>}{<code>}{<code after>}{<box content>}
+% \DescribeMacro\collectbox@{<code at begin>}{<code>}{<code at end>}{<box content>}
 % This macro is the internal form of \Macro\collectbox with the optional arguments replaced by mandatory ones.
 % The \Macro\collectbox macro itself uses it after checking for and reading the optional arguments.
 % If this macro is to be used in other macros this overhead can be avoided by using the internal form directly.
@@ -257,10 +252,10 @@
 %
 %
 % \DescribeMacro\@collectbox{<code>}{<box content>}
-% This macro is a short version of \Macro\collectbox and only accepts one argument \MacroArgs<code> besides the later \Macro<box content>.
-% It is intended for quick version for macros which do not need to insert code before or after the box content.
+% This macro is a short version of \Macro\collectbox and only accepts one argument \MacroArgs<code> besides the later \meta{box content}.
+% It is intended for quick version for macros which do not need to insert code at begin or after the box content.
 %
-% \DescribeMacro\collectboxto@{<code before>}{<code>}{<code after>}{<box content>}
+% \DescribeMacro\collectboxto@{<code at begin>}{<code>}{<code at end>}{<box content>}
 % This macro is the internal form of \Macro\collectboxto with the optional arguments replaced by mandatory ones.
 % The \Macro\collectboxto macro itself uses it after checking for and reading the optional arguments.
 % If this macro is to be used in other macros this overhead can be avoided by using the internal form directly.
@@ -268,7 +263,13 @@
 %
 % \DescribeMacro\@collectboxto{<box register>}{<code>}{<box content>}
 % This macro is a short version of \Macro\collectboxto and only accepts one \meta{code} argument.
-% It is intended for quick version for macros which do not need to insert code before or after the box content.
+% It is intended for quick version for macros which do not need to insert code at begin or after the box content.
+%
+% \DescribeMacro\nocollectbox@{<code at begin>}{<code>}{<code at end>}
+% Turns a following brace group into basically \Macro\hbox{<code at begin><content><code at end>}<code>.
+% This is useful if a box needs to be build like that but no actual processing of the content is required, e.g.\ for horizontal alignment only.
+% Note that there are some internal code between the three code arguments.
+%
 %
 % \StopEventually{}
 %

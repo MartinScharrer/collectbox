@@ -1,3 +1,8 @@
+%    \begin{macrocode}
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\ProvidesPackage{collectbox}[2011/07/23 v0.2 Collect macro arguments as boxes]
+%    \end{macrocode}
+%
 % \begin{macro}{\collectedbox}
 % Box register used to store collected box.
 %    \begin{macrocode}
@@ -77,16 +82,22 @@
         {\let\@let@token=}%
         {\collectbox@arg}%
 }
-\def\collectbox@env@bgroup{%
-    \collectboxenvfalse
-    \let\collectbox@bgroup\collectbox@macro@bgroup
-    \ifcollectboxenvignorespaces
-        .\expandafter\ignorespaces
-    \fi
-}
-\let\collectbox@bgroup\collectbox@macro@bgroup
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\collectbox@env@bgroup}
+%    \begin{macrocode}
+\def\collectbox@env@bgroup{%
+    \let\collectbox@endcode\relax
+    \let\collectbox@bgroup\collectbox@macro@bgroup
+    \ignorespaces
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\let\collectbox@bgroup\collectbox@macro@bgroup
+%    \end{macrocode}
 %
 %
 % \begin{macro}{\collectbox@setgroup}
@@ -102,18 +113,11 @@
 % \begin{macro}{\collectbox@endgroup}
 % Used at the very end of the stored box.
 %    \begin{macrocode}
-\newif\ifcollectboxenv
-\newif\ifcollectboxenvignorespaces
-\collectboxenvignorespacestrue
-
 \def\collectbox@endgroup{%
-    \ifcollectboxenv
-        \ifcollectboxenvignorespaces
-            \ifhmode\unskip\fi
-        \fi
-    \fi
+    \collectbox@endcode
     \color@endgroup
 }
+\let\collectbox@endcode\relax
 %    \end{macrocode}
 % \end{macro}
 %
@@ -239,7 +243,7 @@
 % \end{macro}
 %
 %
-% \begin{macro}{\nocollectbox@}
+% \begin{macro}{\nocollectbox@}[3]{<code at begin>}{<code>}{<code at end>}
 % Turns a brace group into \Macro\hbox{<code at begin><content><code at end>}<code>.
 %    \begin{macrocode}
 \newcommand\nocollectbox@[3]{%
@@ -266,7 +270,7 @@
     \ifx\@currenvir\@tempa
         \edef\@currenvir{\@currenvir\noexpand\empty}%
         \let\collectbox@bgroup\collectbox@env@bgroup
-        \collectboxenvtrue
+        \def\collectbox@endcode{\ifhmode\unskip\fi}%
         \ifcsname end#1\endcsname\else
             \@namedef{end#1}{\egroup\endgroup}%
         \fi

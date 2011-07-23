@@ -1,6 +1,7 @@
 LaTeX package 'collectbox'
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 Copyright (c) 2011 by Martin Scharrer <martin@scharrer-online.de>
+Code Repository: https://bitbucket.org/martin_scharrer/collectbox/
 WWW: http://latex.scharrer-online.de/
 
 This package provides macros to collect and process an macro argument (i.e.

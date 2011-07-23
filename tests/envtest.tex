@@ -1,5 +1,4 @@
-%&pdflatex
-\documentclass{article}
+\documentclass{standalone}
 
 \usepackage{collectbox}
 
@@ -8,6 +7,7 @@
     \collectbox*\fbox
 }
 
+\fboxsep=0pt
 
 \begin{document}
 
@@ -16,25 +16,23 @@
 \mybox{ }
 \begin{mybox}
 \end{mybox}
-
 \begin{mybox} a
-    Test
-    \mybox{ Text \verb+\relax!+ }
+    Env
+    \mybox{ Macro sp \verb+\relax!+ }
     it
-    \mybox{ Text \verb+\relax!+ 
-    \begin{mybox} a
-        Test
+    \mybox{ Macro \verb+\relax!+ 
+    \begin{mybox}
+        Env
         \mybox{ Text \verb+\relax!+ }
         it
         \mybox{ Text \verb+\relax!+ 
         }
-        it
+        EnvEnd
     \end{mybox}
-        bla
+        AfterEnv
     }
-    it
+    EndOuterEnv
 \end{mybox}
-
 \end{document}
 
 
