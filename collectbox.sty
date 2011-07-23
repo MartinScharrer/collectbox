@@ -209,7 +209,7 @@
 % \end{macro}
 %
 %
-% \begin{macro}{\collectboxto@}[4]{box register}{code before}{code}{code after}
+% \begin{macro}{\collectboxto@}[4]{box register}{code at begin}{code}{code at end}
 % Installs code and starts to collect the box.
 %    \begin{macrocode}
 \newcommand\collectboxto@[4]{%
@@ -240,7 +240,7 @@
 %
 %
 % \begin{macro}{\nocollectbox@}
-% Turns a brace group into \Macro\hbox{<code before><content><code after>}<code>.
+% Turns a brace group into \Macro\hbox{<code at begin><content><code at end>}<code>.
 %    \begin{macrocode}
 \newcommand\nocollectbox@[3]{%
     \leavevmode
