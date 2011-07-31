@@ -159,14 +159,27 @@
 \def\collectbox@end{%
     \collectbox@endgroup
     \egroup
-    \protected\def\BOXCONTENT{\usebox\collectedbox}%
-    \protected\def\width{\wd\collectedbox}%
-    \protected\def\height{\ht\collectedbox}%
-    \protected\def\depth{\dp\collectedbox}%
-    \protected\def\totalheight{\@ovri}%
+    \collectbox@protecteddef\BOXCONTENT{\usebox\collectedbox}%
+    \collectbox@protecteddef\width{\wd\collectedbox}%
+    \collectbox@protecteddef\height{\ht\collectedbox}%
+    \collectbox@protecteddef\depth{\dp\collectedbox}%
+    \collectbox@protecteddef\totalheight{\@ovri}%
     \totalheight\height
     \advance\totalheight\depth
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@protecteddef}
+%    \begin{macrocode}
+\begingroup
+\expandafter\ifx\csname protected\endcsname\relax
+    \let\collectbox@protecteddef\def%
+\else
+    \gdef\collectbox@protecteddef{\protected\def}%
+\fi
+\endgroup
 %    \end{macrocode}
 % \end{macro}
 %
