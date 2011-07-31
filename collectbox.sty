@@ -159,11 +159,11 @@
 \def\collectbox@end{%
     \collectbox@endgroup
     \egroup
-    \def\BOXCONTENT{\usebox\collectedbox}%
-    \def\width{\wd\collectedbox}%
-    \def\height{\ht\collectedbox}%
-    \def\depth{\dp\collectedbox}%
-    \let\totalheight\@ovri
+    \protected\def\BOXCONTENT{\usebox\collectedbox}%
+    \protected\def\width{\wd\collectedbox}%
+    \protected\def\height{\ht\collectedbox}%
+    \protected\def\depth{\dp\collectedbox}%
+    \protected\def\totalheight{\@ovri}%
     \totalheight\height
     \advance\totalheight\depth
 }
