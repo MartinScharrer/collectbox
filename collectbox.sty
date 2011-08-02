@@ -271,6 +271,21 @@
 % \end{macro}
 %
 %
+% \begin{macro}{\nocollectbox@to}[4]{<length>}{<code at begin>}{<code>}{<code at end>}
+% Turns a brace group into \Macro\hbox' to '<length>{<code at begin><content><code at end>}<code>.
+%    \begin{macrocode}
+\newcommand\nocollectbox@to[4]{%
+    \leavevmode
+    \hb@xt@#1\bgroup
+       \def\collectbox@code{#4\egroup#3}%
+       #2\bgroup
+       \aftergroup\collectbox@code
+       \collectbox@bgroup
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
 % \begin{macro}{\collectboxcheckenv}
 % Checks if current macro is used as environment given by |#1|.
 % If so the |bgroup| eating macro is redefined.
