@@ -298,7 +298,7 @@
     \ifx\@currenvir\@tempa
         \edef\@currenvir{\@currenvir\noexpand\empty}%
         \let\collectbox@bgroup\collectbox@env@bgroup
-        \def\collectbox@endcode\collectbox@env@endcode
+        \let\collectbox@endcode\collectbox@env@endcode
         \expandafter\ifx\csname end#1\endcsname\relax
             \expandafter\let\csname end#1\endcsname\collectbox@envend
         \fi
