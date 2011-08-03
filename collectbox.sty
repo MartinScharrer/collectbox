@@ -298,14 +298,28 @@
     \ifx\@currenvir\@tempa
         \edef\@currenvir{\@currenvir\noexpand\empty}%
         \let\collectbox@bgroup\collectbox@env@bgroup
-        \def\collectbox@endcode{\ifhmode\unskip\fi}%
-        \ifcsname end#1\endcsname\else
-            \@namedef{end#1}{\egroup\endgroup}%
+        \def\collectbox@endcode\collectbox@env@endcode
+        \expandafter\ifx\csname end#1\endcsname\relax
+            \expandafter\let\csname end#1\endcsname\collectbox@envend
         \fi
     \else
         \endgroup
     \fi
 }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@env@endcode}
+%    \begin{macrocode}
+\def\collectbox@env@endcode{\ifhmode\unskip\fi}%
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@envend}
+%    \begin{macrocode}
+\def\collectbox@envend{\egroup\endgroup}%
 %    \end{macrocode}
 % \end{macro}
 %
