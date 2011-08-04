@@ -52,6 +52,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\collect@box}
+% The box primitive used. Might be locally redefined to \Macro\vbox if required.
+%    \begin{macrocode}
+\let\collect@box\hbox
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\collectbox@mode}
+% 
+%    \begin{macrocode}
+\let\collectbox@mode\leavevmode
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\collectbox@}
 % The box is saved using |\setbox|. Color is supported by using |\collectbox@setgroup|.
@@ -62,9 +75,9 @@
 %    \begin{macrocode}
 \newcommand\collectbox@[3]{%
     \begingroup
-    \leavevmode
+    \collectbox@mode
     \@temptokena{#3\collectbox@end#2\endgroup}%
-    \setbox\collectedbox\hbox\bgroup
+    \setbox\collectedbox\collect@box\bgroup
        \collectbox@setgroup
        #1\bgroup
        \aftergroup\the
@@ -127,9 +140,9 @@
 %    \begin{macrocode}
 \newcommand\@collectbox[1]{%
     \begingroup
-    \leavevmode
+    \collectbox@mode
     \@temptokena{\collectbox@end#1\endgroup}%
-    \setbox\collectedbox\hbox\bgroup
+    \setbox\collectedbox\collect@box\bgroup
        \collectbox@setgroup\bgroup
        \aftergroup\the
        \aftergroup\@temptokena
@@ -230,8 +243,8 @@
 % Installs code and starts to collect the box.
 %    \begin{macrocode}
 \newcommand\collectboxto@[4]{%
-    \leavevmode
-    \setbox#1\hbox\bgroup
+    \collectbox@mode
+    \setbox#1\collect@box\bgroup
        \def\collectbox@code{#4\collectbox@endgroup\egroup#3}%
        \collectbox@setgroup#2\bgroup
        \aftergroup\collectbox@code
@@ -245,8 +258,8 @@
 % Collects the next brace group as hbox into box register |#1| and executes token |#2| afterwards.
 %    \begin{macrocode}
 \newcommand\@collectboxto[2]{%
-    \leavevmode
-    \setbox#1\hbox\bgroup
+    \collectbox@mode
+    \setbox#1\collect@box\bgroup
        \def\collectbox@code{\collectbox@endgroup\egroup#2}%
        \collectbox@setgroup\bgroup
        \aftergroup\collectbox@code
@@ -260,8 +273,8 @@
 % Turns a brace group into \Macro\hbox{<code at begin><content><code at end>}<code>.
 %    \begin{macrocode}
 \newcommand\nocollectbox@[3]{%
-    \leavevmode
-    \hbox\bgroup
+    \collectbox@mode
+    \collect@box\bgroup
        \def\collectbox@code{#3\egroup#2}%
        #1\bgroup
        \aftergroup\collectbox@code
@@ -275,8 +288,8 @@
 % Turns a brace group into \Macro\hbox' to '<length>{<code at begin><content><code at end>}<code>.
 %    \begin{macrocode}
 \newcommand\nocollectbox@to[4]{%
-    \leavevmode
-    \hb@xt@#1\bgroup
+    \collectbox@mode
+    \collect@box to #1\bgroup
        \def\collectbox@code{#4\egroup#3}%
        #2\bgroup
        \aftergroup\collectbox@code
