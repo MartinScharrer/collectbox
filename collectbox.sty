@@ -304,11 +304,16 @@
 % If so the |bgroup| eating macro is redefined.
 % A suitable end-macro is provided if non exists. All of this is done inside
 % a group to keep thing local.
+% The \Macro\@currenvir macro is redefined to contain \Macro\empty so that 
+% macros with the same name can be used inside the environment without collisions.
+% This requires an extra internal group so that this change is reverted before the
+% \Macro\end macro.
 %    \begin{macrocode}
 \newcommand*\collectboxcheckenv[1]{%
     \begingroup
     \def\@tempa{#1}%
     \ifx\@currenvir\@tempa
+        \collectboxenvtrue
         \edef\@currenvir{\@currenvir\noexpand\empty}%
         \let\collectbox@bgroup\collectbox@env@bgroup
         \let\collectbox@endcode\collectbox@env@endcode
@@ -319,6 +324,7 @@
         \endgroup
     \fi
 }
+\newif\ifcollectboxenv
 %    \end{macrocode}
 % \end{macro}
 %
