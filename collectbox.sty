@@ -312,16 +312,19 @@
 \newcommand*\collectboxcheckenv[1]{%
     \begingroup
     \def\@tempa{#1}%
+    \expandafter\endgroup
     \ifx\@currenvir\@tempa
-        \collectboxenvtrue
-        \edef\@currenvir{\@currenvir\noexpand\empty}%
-        \let\collectbox@bgroup\collectbox@env@bgroup
-        \let\collectbox@endcode\collectbox@env@endcode
-        \expandafter\ifx\csname end#1\endcsname\relax
-            \expandafter\let\csname end#1\endcsname\collectbox@envend
-        \fi
-    \else
-        \endgroup
+        \@collectboxisenv{#1}%
+    \fi
+}
+\def\@collectboxisenv#1{%
+    \begingroup
+    \collectboxenvtrue
+    \edef\@currenvir{\@currenvir\noexpand\empty}%
+    \let\collectbox@bgroup\collectbox@env@bgroup
+    \let\collectbox@endcode\collectbox@env@endcode
+    \expandafter\ifx\csname end#1\endcsname\relax
+        \expandafter\let\csname end#1\endcsname\collectbox@envend
     \fi
 }
 \newif\ifcollectboxenv
