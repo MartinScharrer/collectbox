@@ -11,13 +11,13 @@ DOCFILES=collectbox.pdf
 #collectbox-de.pdf
 SRCFILES=collectbox.dtx collectbox.ins README Makefile
 
-all: doc
+all: unpack doc
 
 package: unpack
 class: unpack
 
 ${PACKEDFILES}: collectbox.dtx collectbox.ins
-	pdflatex collectbox.ins
+	yes | pdflatex collectbox.ins
 
 unpack: ${PACKEDFILES}
 
@@ -57,27 +57,17 @@ ${INSTALLDIR}:
 ${DOCINSTALLDIR}:
 	mkdir -p $@
 
-ctanify: ${SRCFILES} ${DOCFILES} collectbox.tds.zip
-	${RM} collectbox.zip
-	zip collectbox.zip $^ 
-	unzip -t collectbox.zip
-	unzip -t collectbox.tds.zip
+.PHONY: build
 
-zip: collectbox.zip
+build: collectbox.dtx collectbox.ins README
+	rm -rf build/
+	mkdir build
+	perl ../dtx/dtx.pl collectbox.dtx build/collectbox.dtx
+	${CP} collectbox.ins README build/
+	cd build && yes | tex collectbox.ins
+	cd build && latexmk -pdf collectbox.dtx
+	cd build && pdfopt collectbox.pdf opt.pdf && mv opt.pdf collectbox.pdf
+	cd build && ctanify collectbox.dtx collectbox.ins collectbox.sty README
+	cd build && ${CP} collectbox.tar.gz /tmp
 
-tdszip: collectbox.tds.zip
-
-collectbox.zip: ${SRCFILES} ${DOCFILES} | pdfopt
-	${RM} $@
-	zip $@ $^ 
-
-collectbox.tds.zip: ${SRCFILES} ${PACKEDFILES} ${DOCFILES} | pdfopt
-	${RMDIR} tds
-	mkdir -p tds/tex/latex/collectbox
-	mkdir -p tds/doc/latex/collectbox
-	mkdir -p tds/source/latex/collectbox
-	${CP} ${DOCFILES}    tds/doc/latex/collectbox
-	${CP} ${PACKEDFILES} tds/tex/latex/collectbox
-	${CP} ${SRCFILES}    tds/source/latex/collectbox
-	cd tds; zip -r ../$@ .
 
