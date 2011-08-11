@@ -67,7 +67,7 @@ build: collectbox.dtx collectbox.ins README
 	cd build && yes | tex collectbox.ins
 	cd build && latexmk -pdf collectbox.dtx
 	cd build && pdfopt collectbox.pdf opt.pdf && mv opt.pdf collectbox.pdf
-	cd build && ctanify collectbox.dtx collectbox.ins collectbox.sty README
+	cd build && ctanify collectbox.dtx collectbox.ins collectbox.sty README collectbox.pdf
 	cd build && ${CP} collectbox.tar.gz /tmp
 
 
