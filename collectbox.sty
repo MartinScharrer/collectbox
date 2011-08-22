@@ -92,12 +92,21 @@
 %    \begin{macrocode}
 \newcommand\collectbox@env[3]{%
     \collectbox@mode
-    \def\collectboxenvend{#3\collectbox@end#2}%
+    \def\collectboxenvend{#3\collectbox@end#2\collectbox@currenvir}%
     \setbox\collectedbox\collect@box\bgroup
        \collectbox@setgroup
        \collectbox@reset
        \ignorespaces
        #1%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@currenenvir}
+%    \begin{macrocode}
+\def\collectbox@currenvir{%
+    \edef\@currenvir{\@currenvir}%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -195,7 +204,7 @@
     \advance\totalheight\depth
     \ifcollectboxenv
         \collectbox@reset
-        \edef\@currenvir{\@currenvir}%
+        \collectbox@currenvir
     \fi
 }
 %    \end{macrocode}
@@ -373,6 +382,16 @@
 % \begin{macro}{\collectbox@envend}
 %    \begin{macrocode}
 \def\collectbox@envend{\collectboxenvend}%
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectboxenvend}
+%    \begin{macrocode}
+\def\collectboxenvend{%
+    \egroup
+    \collectbox@currenvir
+}%
 %    \end{macrocode}
 % \end{macro}
 %
