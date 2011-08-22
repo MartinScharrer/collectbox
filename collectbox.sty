@@ -84,6 +84,21 @@
        \aftergroup\@temptokena
        \collectbox@bgroup
 }
+\let\collectbox@macro\collectbox@
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\collectbox@env}
+%    \begin{macrocode}
+\newcommand\collectbox@env[3]{%
+    \collectbox@mode
+    \def\collectboxenvend{#3\collectbox@end#2}%
+    \setbox\collectedbox\collect@box\bgroup
+       \collectbox@setgroup
+       \collectbox@reset
+       \ignorespaces
+       #1%
+}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -101,8 +116,7 @@
 % \begin{macro}{\collectbox@env@bgroup}
 %    \begin{macrocode}
 \def\collectbox@env@bgroup{%
-    \let\collectbox@endcode\relax
-    \let\collectbox@bgroup\collectbox@macro@bgroup
+    \collectbox@reset
     \ignorespaces
 }
 %    \end{macrocode}
@@ -179,8 +193,22 @@
     \collectbox@protecteddef\totalheight{\@ovri}%
     \totalheight\height
     \advance\totalheight\depth
+    \ifcollectboxenv
+        \collectbox@reset
+        \edef\@currenvir{\@currenvir}%
+    \fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\collectbox@reset}
+%    \begin{macrocode}
+\def\collectbox@reset{%
     \let\collectbox@endcode\relax
     \let\collectbox@bgroup\collectbox@macro@bgroup
+    \let\collectbox@\collectbox@macro
+    \collectboxenvfalse
 }
 %    \end{macrocode}
 % \end{macro}
@@ -321,11 +349,11 @@
 }
 \def\@collectboxisenv#1{%
     \noindent
-    \begingroup
     \collectboxenvtrue
     \edef\@currenvir{\@currenvir\noexpand\empty}%
     \let\collectbox@bgroup\collectbox@env@bgroup
     \let\collectbox@endcode\collectbox@env@endcode
+    \let\collectbox@\collectbox@env
     \expandafter\ifx\csname end#1\endcsname\relax
         \expandafter\let\csname end#1\endcsname\collectbox@envend
     \fi
@@ -344,7 +372,7 @@
 %
 % \begin{macro}{\collectbox@envend}
 %    \begin{macrocode}
-\def\collectbox@envend{\egroup\endgroup}%
+\def\collectbox@envend{\collectboxenvend}%
 %    \end{macrocode}
 % \end{macro}
 %
