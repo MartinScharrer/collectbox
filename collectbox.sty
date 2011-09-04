@@ -467,7 +467,7 @@
     \begingroup
     \collectbox@mode
     \def\collectbox@codeafter{#4\endgroup}%
-    \def\collectbox@endtabenv{\collectbox@dorealarraycr\end{#1}#5\collectbox@end}%
+    \def\collectbox@endtabenv{\end{#1}#5\collectbox@end}%
     \def\collectbox@dotab{#3\begin{#1}#2}%
     \setbox\collectedbox\collect@box\bgroup
        \collectbox@setgroup
@@ -522,7 +522,7 @@
 % \begin{macro}{\collebox@@@@cr}
 %    \begin{macrocode}
 \def\collebox@@@@cr{%
-    \@ifnextchar\egroup{\collectbox@aftertab}{%
+    \@ifnextchar\egroup{\collectbox@dorealarraycr\collectbox@aftertab}{%
         \ifx\@let@token\noalign
             \expandafter\collectbox@handlenoalign
         \else
