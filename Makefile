@@ -1,3 +1,16 @@
+CONTRIBUTION  = collectbox
+NAME          = Martin Scharrer
+EMAIL         = martin@scharrer-online.de
+DIRECTORY     = /macros/latex/contrib/collectbox
+DONOTANNOUNCE = 0
+LICENSE       = free
+FREEVERSION   = lppl
+FILE          = /tmp/${CONTRIBUTION}.tar.gz
+export CONTRIBUTION VERSION NAME EMAIL SUMMARY DIRECTORY DONOTANNOUNCE ANNOUNCE NOTES LICENSE FREEVERSION FILE
+
+upload: build
+	ctanupload -p
+
 TEXMF=${HOME}/texmf
 INSTALLDIR=${TEXMF}/tex/latex/collectbox
 DOCINSTALLDIR=${TEXMF}/doc/latex/collectbox
