@@ -24,10 +24,10 @@
 %<*driver>
 \ProvidesFile{collectbox.dtx}[%
 %<=*DATE>
-    2011/08/23
+    2012/05/13
 %<=/DATE>
 %<=*VERSION>
-    v0.4
+    v0.4a
 %<=/VERSION>
     DTX File of collectbox]
 \documentclass{ydoc}
@@ -72,16 +72,15 @@
 % \changes{v0.3a}{2011/08/11}{Fixed issue with collectbox macros in the end-code of a collectbox environment.}
 % \changes{v0.4}{2011/08/23}{In environment-mode the begin and end are now placed directly around the content to allow tabular-like environments.
 %                            Added support for tabular-like environments in macro-mode.}
+% \changes{v0.4a}{2012/05/13}{Made use of \cs{noindent} by the environment version optional.}
 %
 %
 % \DoNotIndex{\newcommand,\newenvironment}
 %
-% \providecommand*{\url}{\texttt}
 % \GetFileInfo{collectbox.dtx}
-% \title{The \textsf{collectbox} package}
-% \author{Martin Scharrer\\ \url{martin@scharrer-online.de}}
-% \date{\fileversion~from \filedate}
-%
+% \author{Martin Scharrer}
+% \email{martin@scharrer-online.de}
+% \repository{https://bitbucket.org/martin_scharrer/collectbox}
 % \maketitle
 %
 % \begin{abstract}
@@ -93,8 +92,6 @@
 % and \Macro\egroup are supported. This allows to split the begin and end over different macros or to place them
 % in the begin and end code of an environment.
 % The provided macros are mainly intended to be used inside other macros or environments.
-%
-% {\bfseries\color{red}Disclaimer: This is an beta release of this package and the code might still change in future releases.}
 % \end{abstract}
 %
 % \section{Quick overview}
