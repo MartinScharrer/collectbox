@@ -364,7 +364,7 @@
     \fi
 }
 \def\@collectboxisenv#1{%
-    \noindent
+    \collectbox@noindent
     \collectboxenvtrue
     \edef\@currenvir{\@currenvir\noexpand\empty}%
     \let\collectbox@bgroup\collectbox@env@bgroup
@@ -375,6 +375,7 @@
     \fi
 }
 \newif\ifcollectboxenv
+\let\collectbox@noindent\noindent
 %    \end{macrocode}
 % \end{macro}
 %
