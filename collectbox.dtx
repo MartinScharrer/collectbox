@@ -24,10 +24,10 @@
 %<*driver>
 \ProvidesFile{collectbox.dtx}[%
 %<=*DATE>
-    2012/05/13
+    2012/05/17
 %<=/DATE>
 %<=*VERSION>
-    v0.4a
+    v0.4b
 %<=/VERSION>
     DTX File of collectbox]
 \documentclass{ydoc}
@@ -73,6 +73,7 @@
 % \changes{v0.4}{2011/08/23}{In environment-mode the begin and end are now placed directly around the content to allow tabular-like environments.
 %                            Added support for tabular-like environments in macro-mode.}
 % \changes{v0.4a}{2012/05/13}{Made use of \cs{noindent} by the environment version optional.}
+% \changes{v0.4b}{2012/05/17}{Added \cs{@Collectbox} macro.}
 %
 %
 % \DoNotIndex{\newcommand,\newenvironment}
@@ -107,6 +108,7 @@
 %
 % \DescribeMacro\collectbox@{<code at begin>}{<code>}{<code at end>}{<box content>}
 % \DescribeMacro\@collectbox{<code>}{<box content>}
+% \DescribeMacro\@Collectbox{<code>}{<content>}
 % \DescribeMacro\@collectboxto{<box register>}{<token>}{<box content>}
 % \DescribeMacro\nocollectbox@{<code at begin>}{<code>}{<code at end>}
 % \endgroup
@@ -262,6 +264,13 @@
 % \DescribeMacro\@collectbox{<code>}{<box content>}
 % This macro is a short version of \Macro\collectbox and only accepts one argument \MacroArgs<code> besides the later \meta{box content}.
 % It is intended for quick version for macros which do not need to insert code at begin or after the box content.
+%
+% \DescribeMacro\@Collectbox{<code>}{<content>}
+% This macro is similar to \Macro\@collectbox but reads the content as macro argument and
+% not as a box. This is more efficient but does not allow for special content like verbatim text.
+% This macro is indented for applications when an already boxed but now modified content needs
+% to be boxed again, like it is done by \pkg{adjustbox}.
+%
 %
 % \DescribeMacro\collectboxto@{<code at begin>}{<code>}{<code at end>}{<box content>}
 % This macro is the internal form of \Macro\collectboxto with the optional arguments replaced by mandatory ones.
