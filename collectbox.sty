@@ -264,7 +264,7 @@
 %    \begin{macrocode}
 \begingroup
 \expandafter\ifx\csname protected\endcsname\relax
-    \let\collectbox@protecteddef\def%
+    \global\let\collectbox@protecteddef\def%
 \else
     \gdef\collectbox@protecteddef{\protected\def}%
 \fi
