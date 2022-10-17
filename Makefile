@@ -8,12 +8,13 @@ CTAN_FILE     = ${CONTRIBUTION}.zip
 export CONTRIBUTION VERSION NAME EMAIL SUMMARY DIRECTORY DONOTANNOUNCE ANNOUNCE NOTES LICENSE FREEVERSION CTAN_FILE
 
 
+README        = README.txt
 MAINDTXS      = ${CONTRIBUTION}.dtx
 DTXFILES      = ${MAINDTXS}
 INSFILES      = ${CONTRIBUTION}.ins
 LTXFILES      = ${CONTRIBUTION}.sty
 MAINPDFS      = ${CONTRIBUTION}.pdf
-LTXDOCFILES   = ${MAINPDFS} README
+LTXDOCFILES   = ${MAINPDFS} ${README}
 LTXSRCFILES   = ${DTXFILES} ${INSFILES}
 PLAINFILES    = #${CONTRIBUTION}.tex
 PLAINDOCFILES = #${CONTRIBUTION}.?
@@ -67,7 +68,7 @@ all: doc
 
 doc: ${MAINPDFS}
 
-${MAINPDFS}: ${DTXFILES} README ${INSFILES} ${LTXFILES}
+${MAINPDFS}: ${DTXFILES} ${README} ${INSFILES} ${LTXFILES}
 	${MAKE} --no-print-directory build
 	cp "${BUILDDIR}/$@" "$@"
 
@@ -77,7 +78,7 @@ endif
 
 ${BUILDDIR}: ${MAINFILES}
 	-mkdir ${BUILDDIR} 2>/dev/null || true
-	cp ${INSFILES} README ${BUILDDIR}/
+	cp ${INSFILES} ${README} ${BUILDDIR}/
 	$(foreach DTX,${MAINDTXS}, tex '\input ydocincl\relax\includefiles{${DTX}}{${BUILDDIR}/${DTX}}' && rm -f ydocincl.log;)
 	cd ${BUILDDIR}; $(foreach INS, ${INSFILES}, tex ${INS};)
 	cd ${BUILDDIR}; $(foreach DTX, ${MAINDTXS}, ${LATEXMK} ${DTX};)

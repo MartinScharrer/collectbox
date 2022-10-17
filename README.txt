@@ -1,8 +1,9 @@
 LaTeX package 'collectbox'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Copyright (c) 2011-2016 by Martin Scharrer <martin@scharrer-online.de>
-Code Repository: https://bitbucket.org/martin_scharrer/collectbox/
-WWW: http://latex.scharrer-online.de/
+Copyright (c) 2010-2022 by Martin Scharrer <martin.scharrer@web.de>
+License: LaTeX Project Public License, v1.3 or later: http://www.latex-project.org/lppl.txt
+Repository: https://github.com/MartinScharrer/collectbox
+Issues: https://github.com/MartinScharrer/collectbox/issues
 
 This package provides macros to collect and process an macro argument (i.e.
 something which looks like a macro argument) as horizontal box instead as a real
